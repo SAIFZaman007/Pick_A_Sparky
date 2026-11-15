@@ -1,10 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
+import { CookieConsent } from "@/components/consent/cookie-consent";
+import { SectionScroll } from "@/components/layout/section-link";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { SkipLink } from "@/components/layout/skip-link";
 import { JsonLd } from "@/components/sections/json-ld";
-import { gaMeasurementId } from "@/lib/analytics";
+import { cookieBannerEnabled, gaMeasurementId } from "@/lib/analytics";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 import { site } from "@/lib/site";
 import "./globals.css";
@@ -72,7 +75,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // `data-scroll-behavior="smooth"`: in-page links (e.g. "#reviews") scroll smoothly,
+    // `data-scroll-behavior="smooth"`: in-page scrolling (e.g. to the reviews) is smooth,
     // but Next.js switches smooth scrolling off while it moves to a new page, so every
     // navigation (the logo included) lands instantly at the top instead of animating
     // from the old scroll position and stopping part-way down.
@@ -82,18 +85,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${poppins.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
-        >
-          Skip to main content
-        </a>
+        <SkipLink />
         <SiteHeader />
-        <main id="main" className="flex-1">
+        <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
           {children}
         </main>
+        <SectionScroll />
         <SiteFooter />
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
+        {cookieBannerEnabled ? <CookieConsent /> : null}
         {gaMeasurementId ? (
           <GoogleAnalytics measurementId={gaMeasurementId} />
         ) : null}

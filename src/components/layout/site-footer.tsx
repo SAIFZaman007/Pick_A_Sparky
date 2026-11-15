@@ -1,11 +1,17 @@
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { CookieSettingsButton } from "@/components/consent/cookie-settings-button";
 import { HomeLink } from "@/components/layout/home-link";
 import { MyQuotesFooterLink } from "@/components/layout/my-quotes-footer-link";
+import { SectionLink } from "@/components/layout/section-link";
 import { Container } from "@/components/ui/layout";
+import { cookieBannerEnabled } from "@/lib/analytics";
 import { getOrganisation, getSiteContent } from "@/lib/content";
 import { legalLinks, navigation, site } from "@/lib/site";
+
+const footerLinkClass =
+  "flex items-center justify-between gap-3 py-2.5 text-sm text-ink/75 hover:text-ink";
 
 function XIcon() {
   return (
@@ -70,17 +76,28 @@ export async function SiteFooter() {
               <h2 className="text-sm font-semibold text-ink">{group.title}</h2>
               <ul className="mt-4">
                 {group.links.map((link) => (
-                  <li key={link.href} className="border-b border-ink/10">
-                    <Link
-                      href={link.href}
-                      className="flex items-center justify-between gap-3 py-2.5 text-sm text-ink/75 hover:text-ink"
-                    >
-                      {link.label}
-                      <ChevronRight
-                        aria-hidden
-                        className="size-3.5 opacity-60"
-                      />
-                    </Link>
+                  <li key={link.label} className="border-b border-ink/10">
+                    {link.section ? (
+                      <SectionLink
+                        href={link.href}
+                        section={link.section}
+                        className={footerLinkClass}
+                      >
+                        {link.label}
+                        <ChevronRight
+                          aria-hidden
+                          className="size-3.5 opacity-60"
+                        />
+                      </SectionLink>
+                    ) : (
+                      <Link href={link.href} className={footerLinkClass}>
+                        {link.label}
+                        <ChevronRight
+                          aria-hidden
+                          className="size-3.5 opacity-60"
+                        />
+                      </Link>
+                    )}
                   </li>
                 ))}
                 {group.title === "For Homeowners" ? (
@@ -138,6 +155,11 @@ export async function SiteFooter() {
                 </Link>
               </li>
             ))}
+            {cookieBannerEnabled ? (
+              <li className="sm:px-6 sm:first:pl-0 sm:last:pr-0">
+                <CookieSettingsButton />
+              </li>
+            ) : null}
           </ul>
         </Container>
       </div>
