@@ -41,6 +41,7 @@ export function HowItWorksVideo({
             <SectionHeading
               id={headingId}
               title={`How ${site.name} Works`}
+              align="center"
               weight="bold"
               className="mb-7"
             />
